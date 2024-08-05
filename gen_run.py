@@ -47,7 +47,7 @@ def main():
     # 解决办法：依据 https://github.com/facebookresearch/detectron2/issues/5010#issuecomment-1629504706
     # 将报错位置换成 PIL.Image.BILINEAR 即可
 
-    #注意，如果你换了显卡，需要重新编译安装colmap才能进行exhaustive_matcher 
+    #注意，如果你换了显卡，可能需要重新编译安装colmap才能进行exhaustive_matcher 
     commands.append(f'echo ========================================')
     commands.append(f'echo 3: Sparse scene reconstrution')
     commands.append(f'echo ========================================')
@@ -57,7 +57,6 @@ def main():
         commands.append('mkdir recon')
         commands.append('colmap feature_extractor --database_path ./recon/db.db --image_path ./raw_720p --ImageReader.mask_path ./raw_masks --SiftExtraction.estimate_affine_shape=true --SiftExtraction.domain_size_pool=true --ImageReader.camera_model SIMPLE_RADIAL --ImageReader.single_camera 1')
         commands.append('colmap exhaustive_matcher --database_path ./recon/db.db --SiftMatching.guided_matching=true')
-        # commands.append('')
         commands.append('mkdir -p ./recon/sparse')
         commands.append('colmap mapper --database_path ./recon/db.db --image_path ./raw_720p --output_path ./recon/sparse')
         commands.append('if [ -d "./recon/sparse/1" ]; then echo "Bad reconstruction"; exit 1; else echo "Ok"; fi')
@@ -120,10 +119,10 @@ def main():
     commands.append(f'cd {code_dir}')
     if not os.path.isfile(os.path.join(video_dir, f'{video_name}/output/alignments.npy')):
         commands.append('conda activate preprocessForHugs')
-        if not os.path.exists(os.path.join(video_dir,f"{video_name}/output/4D_humans/phalp")):
-            commands.append("mkdir "+os.path.join(video_dir,f"{video_name}/output/4D_humans/phalp"))
-        if not os.path.exists(os.path.join(video_dir,f"{video_name}/output/4D_humans/sam_segmentations")):
-            commands.append("mkdir "+os.path.join(video_dir,f"{video_name}/output/4D_humans/sam_segmentations"))
+        if not os.path.exists(os.path.join(video_dir,f"{video_name}/output/4d_humans/phalp")):
+            commands.append("mkdir "+os.path.join(video_dir,f"{video_name}/output/4d_humans/phalp"))
+        if not os.path.exists(os.path.join(video_dir,f"{video_name}/output/4d_humans/sam_segmentations")):
+            commands.append("mkdir "+os.path.join(video_dir,f"{video_name}/output/4d_humans/sam_segmentations"))
         commands.append(f'python image_conversion.py --images_dir {os.path.join(video_dir, f"{video_name}/output/images")} --seg_dir{os.path.join(video_dir, f"{video_name}/output/segmentations")} --seg_output_dir {os.path.join(video_dir, f"{video_name}/output/4D_humans/sam_segmentations")} --phalp_output_dir {os.path.join(video_dir, f"{video_name}/output/4D_humans/phalp")} ')
         commands.append('conda deactivate')
     commands.append(f'cd {code_dir}')
@@ -135,9 +134,9 @@ def main():
     commands.append(f'cd {os.path.join("/root/4D-humans")}')
 
     commands.append(f'conda activate 4D-humans')
-    commands.append(f'python track.py video.source = {os.path.join(video_dir, f"{video_name}/output/4D_humans/phalp")} ')
-    commands.append(f' python demo.py --img_folder {os.path.join(video_dir, f"{video_name}/output/images")} \
-    --out_folder demo_out --batch_size=48 ')
+    commands.append(f'python track.py video.source = {os.path.join(video_dir, f"{video_name}/output/4d_humans/phalp")} ')
+    commands.append(f'python demo.py --img_folder {os.path.join(video_dir, f"{video_name}/output/images")} \
+    --out_folder {os.path.join(video_dir, f"{video_name}/output/4d_humans")} --batch_size=48 ')
     commands.append(f'conda deactivate')
     
     # Solve scale ambiguity and make smpl_optimized_aligned_scale.npz
@@ -148,6 +147,18 @@ def main():
     if not os.path.isfile(os.path.join(video_dir, f'{video_name}/output/alignments.npy')):
         commands.append('conda activate preprocessForHugs')
         commands.append(f'python export_alignment_myself.py --scene_dir {os.path.join(video_dir, f"{video_name}/output/sparse")} --images_dir {os.path.join(video_dir, f"{video_name}/output/images")} --raw_smpl {os.path.join(video_dir, f"{video_name}/4d-humans/track_results.pkl")} ')
+        commands.append('conda deactivate')
+    commands.append(f'cd {code_dir}')
+
+    commands.append(f'echo ========================================')
+    commands.append(f'echo 8: make dense pose')
+    commands.append(f'echo ========================================')
+    commands.append(f'cd {code_dir}')
+    if not os.path.isfile(os.path.join(video_dir, f'{video_name}/output/densepose/')):
+        commands.append(f'mkdir {video_name}/output/densepose/')
+        commands.append('conda activate preprocessForHugs')
+        # TO DO
+        commands.append(f'python make_dense_pose.py --input {os.path.join(video_dir, f"{video_name}/output/sparse")} --images_dir {os.path.join(video_dir, f"{video_name}/output/images")} --output_dir')
         commands.append('conda deactivate')
     commands.append(f'cd {code_dir}')
 
