@@ -31,7 +31,7 @@ def main():
         commands.append('conda deactivate')
 
 
-    # Generate masks #验证正确
+    # Generate masks 
     commands.append(f'echo ========================================')
     commands.append(f'echo 2: Masks')
     commands.append(f'echo ========================================')
@@ -41,7 +41,12 @@ def main():
     if not os.path.isdir(os.path.join(video_dir, f'{video_name}/raw_masks')):
         commands.append('conda activate ROMP')
         commands.append(f'python demo.py --config-file ../configs/COCO-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_3x.yaml --input {os.path.join(video_dir, f"{video_name}/raw_720p/*.png")} --output {os.path.join(video_dir, f"{video_name}/raw_masks")}  --opts MODEL.WEIGHTS ./model_final_2d9806.pkl')
-        # commands.append('conda deactivate')
+
+        commands.append(f'cd {video_dir}/{video_name}/raw_masks')
+        commands.append('rm -rf .ipynb_checkpoints') #jupyterlab会出现的文件夹
+        commands.append('rm *.png.png')
+        commands.append(f'cd {video_dir}/{video_name}/raw_720p')
+        commands.append(f'rm -rf .ipynb_checkpoints')
     commands.append(f'cd {code_dir}')
     # 可能会因为pillow版本问题，出现 AttributeError: module 'PIL.Image' has no attribute 'LINEAR' 问题。
     # 解决办法：依据 https://github.com/facebookresearch/detectron2/issues/5010#issuecomment-1629504706
@@ -70,6 +75,8 @@ def main():
         commands.append('cp -r ./recon/dense/sparse ./output/sparse')
     commands.append(f'cd {code_dir}')
 
+
+    #这一步不能少！
     commands.append(f'echo ========================================')
     commands.append(f'echo 4/: Masks for rectified images')
     commands.append(f'echo ========================================')
@@ -80,39 +87,9 @@ def main():
         commands.append('conda deactivate')
     commands.append(f'cd {code_dir}')
 
+    # 移除了densepose和使用ROMP预测人体姿势的代码
 
-    # Run DensePose
-    # 这个densepose，它dense了个啥？？？
-    # commands.append(f'echo ========================================')
-    # commands.append(f'echo 5/{steps}: DensePose')
-    # commands.append(f'echo ========================================')
-    # commands.append(f'cd {os.path.join(code_dir, "detectron2/projects/DensePose")}')
-    # if not os.path.isdir(os.path.join(video_dir, f'{video_name}/output/densepose')):
-    #     commands.append('conda activate preprocessForHugs')
-    #     commands.append(f'python apply_net.py dump configs/densepose_rcnn_R_101_FPN_DL_s1x.yaml https://dl.fbaipublicfiles.com/densepose/densepose_rcnn_R_101_FPN_DL_s1x/165712116/model_final_844d15.pkl {os.path.join(video_dir, f"{video_name}/output/images")} {os.path.join(video_dir, f"{video_name}/output/densepose")}  --output {os.path.join(video_dir, f"{video_name}/output/densepose/output.pkl")} -v')
-    #     commands.append('conda deactivate')
-    # commands.append(f'cd {code_dir}')
-
-    # SMPL parameters estimation
-    # commands.append(f'echo ========================================')
-    # commands.append(f'echo 4: SMPL parameters')
-    # commands.append(f'echo ========================================')
-    # commands.append(f'cd {os.path.join("/root/ROMP")}')
-
-    # if not os.path.exists(os.path.join('/root/ROMP/model_data')):
-    #     commands.append('wget https://github.com/jiangwei221/ROMP/releases/download/v1.1/model_data.zip')
-    #     commands.append('unzip model_data.zip')
-    # if not os.path.exists(os.path.join('/root/ROMP/model_data')):
-    #     commands.append('wget https://github.com/Arthur151/ROMP/releases/download/v1.1/trained_models_try.zip')
-    #     commands.append('unzip trained_models_try.zip')
-    # if not os.path.isdir(os.path.join(video_dir, f'{video_name}/output/smpl_pred')):
-    #     commands.append('conda activate ROMP')
-    #     commands.append(f'python -m romp.predict.image --inputs {os.path.join(video_dir, f"{video_name}/output/images")} --output_dir {os.path.join(video_dir, f"{video_name}/output/smpl_pred")}')
-    #     commands.append('conda deactivate')
-    # commands.append(f'cd {code_dir}')
-
-
-
+    #mask反色和png to jpg
     commands.append(f'echo ========================================')
     commands.append(f'echo 5: Image Conversion')
     commands.append(f'echo ========================================')
@@ -155,10 +132,9 @@ def main():
     commands.append(f'echo ========================================')
     commands.append(f'cd {code_dir}')
     if not os.path.isfile(os.path.join(video_dir, f'{video_name}/output/densepose/')):
-        commands.append(f'mkdir {video_name}/output/densepose/')
+        commands.append(f'mkdir {video_dir}/{video_name}/output/densepose/')
         commands.append('conda activate preprocessForHugs')
-        # TO DO
-        commands.append(f'python make_dense_pose.py --input {os.path.join(video_dir, f"{video_name}/output/sparse")} --images_dir {os.path.join(video_dir, f"{video_name}/output/images")} --output_dir')
+        commands.append(f'python make_dense_pose.py --input {code_dir}/dp_00000.png.npy --images_dir {os.path.join(video_dir, f"{video_name}/output/images")} --output_dir {video_dir}/{video_name}/output/densepose')
         commands.append('conda deactivate')
     commands.append(f'cd {code_dir}')
 

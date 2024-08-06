@@ -114,5 +114,5 @@ pip install torch #不一定是cu12，根据自己硬件装
 pip install -e .[all]
 pip install git+https://github.com/brjathu/PHALP.git #安装phalp
 #可能会有pyrender问题：pyrender报错ImportError: (‘Unable to load EGL library‘, ‘EGL: cannot open shared object file:
-如何解决：https://blog.csdn.net/jiaoooooo/article/details/133500112
+#如何解决：https://blog.csdn.net/jiaoooooo/article/details/133500112
 ```

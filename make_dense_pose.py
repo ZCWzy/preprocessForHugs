@@ -10,5 +10,4 @@ opt = parser.parse_args()
 
 for pic in os.listdir(opt.images_dir):
   outname = "dp_"+pic+".npy"
-  print(opt.input)
   os.system(f"cp {opt.input} {os.path.join(opt.output_dir,outname)}")
