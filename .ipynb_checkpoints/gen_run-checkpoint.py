@@ -131,8 +131,7 @@ def main():
     commands.append(f'cd {code_dir}')
     if not os.path.isfile(os.path.join(video_dir, f'{video_name}/output/alignments.npy')):
         commands.append('conda activate preprocessForHugs')
-        commands.append(f'python export_alignment_myself.py --scene_dir {os.path.join(video_dir, f"{video_name}/output/sparse")} --images_dir {os.path.join(video_dir, f"{video_name}/output/images")} --raw_smpl {os.path.join(video_dir, f"{video_name}/output/4d_humans/track_results.pkl")} ')
-        commands.append(f'mv ./smpl_optimized_aligned_scale.npz {os.path.join(video_dir, f"{video_name}/output/")}')
+        commands.append(f'python export_alignment_myself.py --scene_dir {os.path.join(video_dir, f"{video_name}/output/sparse")} --images_dir {os.path.join(video_dir, f"{video_name}/output/images")} --raw_smpl {os.path.join(video_dir, f"{video_name}/4d-humans/track_results.pkl")} ')
         commands.append('conda deactivate')
     commands.append(f'cd {code_dir}')
 
