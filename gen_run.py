@@ -45,6 +45,7 @@ def main():
         commands.append(f'cd {video_dir}/{video_name}/raw_masks')
         commands.append('rm -rf .ipynb_checkpoints') #jupyterlab会出现的文件夹
         commands.append('rm *.png.png')
+        commands.append('rm -rf det')
         commands.append(f'cd {video_dir}/{video_name}/raw_720p')
         commands.append(f'rm -rf .ipynb_checkpoints')
     commands.append(f'cd {code_dir}')
@@ -85,6 +86,10 @@ def main():
         commands.append('conda activate ROMP')
         commands.append(f'python demo.py --config-file ../configs/COCO-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_3x.yaml --input {os.path.join(video_dir, f"{video_name}/output/images/*.png")} --output {os.path.join(video_dir, f"{video_name}/output/segmentations")}  --opts MODEL.WEIGHTS ./model_final_2d9806.pkl')
         commands.append('conda deactivate')
+        commands.append(f'cd {os.path.join(video_dir, f'{video_name}/output/segmentations')}')
+        commands.append('rm -rf .ipynb_checkpoints') #jupyterlab会出现的文件夹
+        commands.append('rm *.png.png')
+        commands.append('rm -rf det')
     commands.append(f'cd {code_dir}')
 
     # 移除了densepose和使用ROMP预测人体姿势的代码
@@ -111,9 +116,10 @@ def main():
     commands.append(f'cd {os.path.join("/root/4D-humans")}')
 
     commands.append(f'conda activate 4D-humans')
-    commands.append(f'python track.py video.source = {os.path.join(video_dir, f"{video_name}/output/4d_humans/phalp")} ')
+    commands.append(f'python track.py video.source={os.path.join(video_dir, f"{video_name}/output/4d_humans/phalp")} ')
     commands.append(f'python demo.py --img_folder {os.path.join(video_dir, f"{video_name}/output/images")} \
-    --out_folder {os.path.join(video_dir, f"{video_name}/output/4d_humans")} --batch_size=48 ')
+    --out_folder ./demo_out --batch_size=48')
+    commands.append(f'cp /output/results/track_results.pkl {os.path.join(video_dir, f"{video_name}/4d-humans/track_results.pkl")}')
     commands.append(f'conda deactivate')
     
     # Solve scale ambiguity and make smpl_optimized_aligned_scale.npz
@@ -132,9 +138,9 @@ def main():
     commands.append(f'echo ========================================')
     commands.append(f'cd {code_dir}')
     if not os.path.isfile(os.path.join(video_dir, f'{video_name}/output/densepose/')):
-        commands.append(f'mkdir {video_dir}/{video_name}/output/densepose/')
+        commands.append(f'mkdir {os.path.join(video_dir, f"{video_name}/output/densepose")}')
         commands.append('conda activate preprocessForHugs')
-        commands.append(f'python make_dense_pose.py --input {code_dir}/dp_00000.png.npy --images_dir {os.path.join(video_dir, f"{video_name}/output/images")} --output_dir {video_dir}/{video_name}/output/densepose')
+        commands.append(f'python make_densepose.py --input {code_dir}/dp_00000.png.npy --images_dir {os.path.join(video_dir, f"{video_name}/output/images")} --output_dir {os.path.join(video_dir, f"{video_name}/output/densepose")}')
         commands.append('conda deactivate')
     commands.append(f'cd {code_dir}')
 

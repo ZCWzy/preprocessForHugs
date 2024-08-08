@@ -1,6 +1,17 @@
+### 代码说明
+make_densepose和dp_00000.png.npy 用于产生densepose文件夹中的内容。（我也不知道dense了个啥，反正内容都一样）<br />
+drawpoint.py 用于将4D-humans产生的2d关节点可视化 <br />
+export_alignment_myself.py 我自己写的对齐文件 <br />
+image_conversion.py 用于处理segmentations，并且得到4D-human需要的jpg图片 <br />
+其他文件夹中代码来源于ml-neuman <br />
+
+### gen_run.py
+建议执行前先仔细看注释
+
+
 ### 说明
 本环境配置步骤来自[ml-neuman的dockerfile](https://github.com/apple/ml-neuman/tree/main/preprocess "ml-neuman的dockerfile")，建议两个一同参考。<br />
-总而言之，你需要colmap，ROMP，4D-humans<br />
+总而言之，你需要colmap，ROMP(?)，4D-humans<br />
 可以在ubuntu22上跑，其他应该也可以<br />
 建议一块一块执行，或者一行一行执行。<br />
 
