@@ -89,6 +89,7 @@ def solve_translation(p3d, p2d, mvp):
 
 
 def solve_scale(joints_world, cap, plane_model):
+    print(joints_world)
     cam_center = cap.cam_pose.camera_center_in_world
     a, b, c, d = plane_model
     scales = []
@@ -97,7 +98,7 @@ def solve_scale(joints_world, cap, plane_model):
         right = -(a * cam_center[0] + b * cam_center[1] + c * cam_center[2] + d)
         coe = a * (jx - cam_center[0]) + b * (jy - cam_center[1]) + c * (jz - cam_center[2])
         s = right / coe
-        print(s)
+        # print(s)
         if s > 0:
             scales.append(s)
     return min(scales)
@@ -210,10 +211,7 @@ def main(opt):
     scales = []
     for i, cap in tqdm(enumerate(scene.captures), total=len(scene.captures)):
         pts_3d = raw_smpl['joints3d'][i]
-   
         pts_2d = raw_smpl['joints2d_img_coord'][i]
-        # print( pts_3d)
-        # print( pts_2d)          
         _, R_rod, t, inl = cv2.solvePnPRansac(pts_3d, pts_2d, cap.pinhole_cam.intrinsic_matrix, np.zeros(4),
                                               flags=cv2.SOLVEPNP_EPNP)
         t = t.astype(np.float32)[:, 0]

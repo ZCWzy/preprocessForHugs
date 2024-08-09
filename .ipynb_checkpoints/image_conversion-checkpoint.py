@@ -12,7 +12,6 @@ def main(opt):
 
     for picture in os.listdir(opt.images_dir):
         #png to jpg
-        print(picture)
         img = cv2.imread(opt.images_dir+"/"+picture)
         cv2.imwrite(os.path.join(opt.phalp_output_dir+'/'+picture+'.jpg'), img, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
 

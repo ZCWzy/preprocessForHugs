@@ -1,8 +1,10 @@
 echo ========================================
 echo 1: Extract frames
 echo ========================================
+cd /root/preprocessForHugs
 conda activate preprocessForHugs
-python save_video_frames.py --video /root/autodl-tmp/data/myself.mp4 --save_to /root/autodl-tmp/data/myself/raw_720p  --width 544 --height 960 --every 10 --skip=0
+# python save_video_frames.py --video /root/autodl-tmp/data/myself.mp4 --save_to /root/autodl-tmp/data/myself/raw_720p  --width 3840 --height 2160 --every 10 --skip=0
+python save_video_frames.py --video /root/autodl-tmp/data/myself.mp4 --save_to /root/autodl-tmp/data/myself/raw_720p  --width 1280 --height 720 --every 10 --skip=0
 conda deactivate
 echo ========================================
 echo 2: Masks
@@ -53,26 +55,28 @@ echo 5: Image Conversion
 echo ========================================
 cd /root/preprocessForHugs
 conda activate preprocessForHugs
+mkdir /root/autodl-tmp/data/myself/output/4d_humans/
 mkdir /root/autodl-tmp/data/myself/output/4d_humans/phalp
 mkdir /root/autodl-tmp/data/myself/output/4d_humans/sam_segmentations
-python image_conversion.py --images_dir /root/autodl-tmp/data/myself/output/images --seg_dir/root/autodl-tmp/data/myself/output/segmentations --seg_output_dir /root/autodl-tmp/data/myself/output/4D_humans/sam_segmentations --phalp_output_dir /root/autodl-tmp/data/myself/output/4D_humans/phalp 
+python image_conversion.py --images_dir /root/autodl-tmp/data/myself/output/images --seg_dir /root/autodl-tmp/data/myself/output/segmentations --seg_output_dir /root/autodl-tmp/data/myself/output/4d_humans/sam_segmentations --phalp_output_dir /root/autodl-tmp/data/myself/output/4d_humans/phalp 
 conda deactivate
 cd /root/preprocessForHugs
 echo ========================================
 echo 6: SMPL parameters
 echo ========================================
-cd /root/4D-humans
+cd /root/4D-Humans
 conda activate 4D-humans
 python track.py video.source=/root/autodl-tmp/data/myself/output/4d_humans/phalp 
 python demo.py --img_folder /root/autodl-tmp/data/myself/output/images     --out_folder ./demo_out --batch_size=48
-cp /output/results/track_results.pkl /root/autodl-tmp/data/myself/4d-humans/track_results.pkl
+cp ./outputs/results/track_result.pkl /root/autodl-tmp/data/myself/output/4d_humans/track_results.pkl
 conda deactivate
 echo ========================================
 echo 7: Solve scale ambiguity
 echo ========================================
 cd /root/preprocessForHugs
 conda activate preprocessForHugs
-python export_alignment_myself.py --scene_dir /root/autodl-tmp/data/myself/output/sparse --images_dir /root/autodl-tmp/data/myself/output/images --raw_smpl /root/autodl-tmp/data/myself/4d-humans/track_results.pkl 
+python export_alignment_myself.py --scene_dir /root/autodl-tmp/data/myself/output/sparse --images_dir /root/autodl-tmp/data/myself/output/images --raw_smpl /root/autodl-tmp/data/myself/output/4d_humans/track_results.pkl 
+mv ./smpl_optimized_aligned_scale.npz /root/autodl-tmp/data/myself/output/4d_humans/
 conda deactivate
 cd /root/preprocessForHugs
 echo ========================================

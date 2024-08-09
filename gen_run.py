@@ -75,6 +75,8 @@ def main():
         commands.append('cp -r ./recon/dense/images ./output/images')
         commands.append('cp -r ./recon/dense/stereo/depth_maps ./output/depth_maps')
         commands.append('cp -r ./recon/dense/sparse ./output/sparse')
+        commands.append('cd ./output/images')
+        commands.append('rm -rf .ipynb_checkpoints')
     commands.append(f'cd {code_dir}')
 
 
@@ -102,7 +104,7 @@ def main():
     commands.append(f'cd {code_dir}')
     if not os.path.isfile(os.path.join(video_dir, f'{video_name}/output/alignments.npy')):
         commands.append('conda activate preprocessForHugs')
-        commands.append('mkdir'+os.path.join(video_dir,f"{video_name}/output/4d_humans/"))
+        commands.append('mkdir '+os.path.join(video_dir,f"{video_name}/output/4d_humans/"))
         if not os.path.exists(os.path.join(video_dir,f"{video_name}/output/4d_humans/phalp")):
             commands.append("mkdir "+os.path.join(video_dir,f"{video_name}/output/4d_humans/phalp"))
         if not os.path.exists(os.path.join(video_dir,f"{video_name}/output/4d_humans/sam_segmentations")):
@@ -132,7 +134,7 @@ def main():
     if not os.path.isfile(os.path.join(video_dir, f'{video_name}/output/alignments.npy')):
         commands.append('conda activate preprocessForHugs')
         commands.append(f'python export_alignment_myself.py --scene_dir {os.path.join(video_dir, f"{video_name}/output/sparse")} --images_dir {os.path.join(video_dir, f"{video_name}/output/images")} --raw_smpl {os.path.join(video_dir, f"{video_name}/output/4d_humans/track_results.pkl")} ')
-        commands.append(f'mv ./smpl_optimized_aligned_scale.npz {os.path.join(video_dir, f"{video_name}/output/")}')
+        commands.append(f'mv ./smpl_optimized_aligned_scale.npz {os.path.join(video_dir, f"{video_name}/output/4d_humans/")}')
         commands.append('conda deactivate')
     commands.append(f'cd {code_dir}')
 
